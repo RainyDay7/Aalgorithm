@@ -13,7 +13,7 @@ void multiply(vector<int> &res) {
 	reverse(b.begin(), b.end());
 	for(int i=0;i<a.size(); i++){
 		for(int j=0; j<b.size(); j++)
-			res[i+j] = (a[i]-'0')*(b[j]-'0');
+			res[i+j] += (a[i]-'0')*(b[j]-'0');
 	}
 	for(int i=res.size()-1; i>=0; i--){
 		if(res[i]!=0){
