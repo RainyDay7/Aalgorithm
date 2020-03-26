@@ -10,40 +10,49 @@ public class KthSmallOfTwoOderedArrays {
     }
     // 由于中位数会受⻓度是奇偶数的影响，所以我们可以把问题转化为求
     // (（n+m+1)/2+(n+m+2)/2)/2。
-    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-        int n = nums1.length;
-        int m = nums2.length;
-// return (findKthNumber(nums1, 0, n-1, nums2,0,m-1,(n+m+1)/2) +
-// findKthNumber(nums1, 0, m-1,nums2,0,m-1,(n+m+2)/2)) /2;
-        return 1;
-    }
-    public static int findKth(int[] arr1, int[] arr2, int k) {
-        if(arr1 == null || arr1.length < 1)
+
+
+    public static int findKth(int[] arr1,int []arr2, int k){
+        int n = arr1.length;
+        int m = arr2.length;
+        if(arr1==null || arr1.length<1){
             return arr2[k-1];
-        if(arr2 == null || arr2.length < 1)
+        }
+        if(arr2==null || arr2.length<1){
             return arr1[k-1];
-        // 注意这个函数的参数有7个，上⾯那个函数的参数只有3个，同名不同函数哈
-        return findKth(arr1, 0, arr1.length - 1, arr2, 0, arr2.length - 1, k -
-                1);
-    }
-    public static int findKth(int[] arr1, int l1, int r1, int[] arr2, int l2,
-                              int r2, int k) {
-        // 递归结束条件
-        if(l1 > r1)
-            return arr2[l2 + k];
-        if(l2 > r2)
-            return arr1[l1 + k];
-        if (k == 0)// 注意，k == 0的结束条件与上⾯两个结束条件不能颠倒。
-            return Math.min(arr1[l1],arr2[l2]);
-        int md1 = l1 + k/2 < r1 ? l1 + k/2 : r1;
-        int md2 = l2 + k/2 < (r2 - l1) ? l2 + k/2 : r2;
-        if(arr1[md1] < arr2[md2])
-            return findKth(arr1, md1 + 1, r1, arr2, l2, r2, k - k / 2 - 1);
-        else if (arr1[md1] > arr2[md2])
-            return findKth(arr1, l1, r1, arr2, md2 + 1, r2, k - k / 2 - 1);
-        else
-            return arr1[md1];//返回arr2[md2]也可以，⼀样的。
+        }
+        return find(arr1, 0, arr1.length-1,arr2,0,arr2.length-1,k);
     }
 
+    private static int find(int[] arr1, int l1, int r1, int[] arr2, int l2, int r2, int k) {
+        if(l1>r1) return arr2[l2+k-1];
+        if(l2>r2) return arr1[l1+k-1];
+        if(k==0) return Math.min(arr1[l1], arr2[l2]);
 
+        int mid1 = l1+(r1-l1)/2;
+        int mid2 = l2+(r2-l2)/2;
+        int halfLen = mid1-l1+mid2-l2+2;//从A和B的开始位置到两个数组中间位置的元素个数
+        if(arr1[mid1]<arr2[mid2]) {
+            if (halfLen > k) {
+                // 此时在合并的数组中A[aBeg...aMid]和元素一定在B[bMid]的左侧，
+                // 即此时第k大的元素一定比B[bMid]这个元素小（严格来说不大于）
+                // 故以后没有必要搜索 B[bMid...bEnd]这些元素
+                return find(arr1, l1, r1, arr2, l2, mid2-1, k);
+            } else {
+                // 此时在合并的数组中A[aBeg...aMid]元素一定在B[bMid]的左侧
+                // 所以前K个元素中一定包含A[aBeg...aMid]（可以使用反证法来证明这点）
+                // 但是无法判断A[amid+1...aEnd]与B[bBeg...bEnd]之间的关系，帮需要对他们进xing判断
+                return find(arr1, mid1 + 1, r1, arr2, l2, r2, k - (mid1 - l1 + 1));
+            }
+        }
+        else	{
+            if (halfLen > k)
+            {
+                return find(arr1, l1, mid1 - 1, arr2, l2, r2, k);		}
+                else		{
+                    return find(arr1, l1, l2, arr2, mid2 + 1, r2, k - (mid2 - l2 + 1));
+                }
+        }
+
+    }
 }
